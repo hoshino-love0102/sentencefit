@@ -29,11 +29,15 @@ class RegisterService(
             throw AuthException(AuthErrorCode.EMAIL_NOT_VERIFIED)
         }
 
+        if (request.role !in setOf(UserRole.STUDENT, UserRole.TEACHER)) {
+            throw AuthException(AuthErrorCode.UNAUTHORIZED)
+        }
+
         val user = User(
             email = request.email,
             password = passwordEncodePort.encode(request.password),
             name = request.name,
-            role = UserRole.STUDENT
+            role = request.role
         )
 
         saveUserPort.save(user)

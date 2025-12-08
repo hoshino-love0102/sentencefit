@@ -1,7 +1,9 @@
 package com.sentencefit.application.auth.dto
 
+import com.sentencefit.domain.user.model.UserRole
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
 data class RegisterRequest(
@@ -15,5 +17,8 @@ data class RegisterRequest(
 
     @field:NotBlank
     @field:Size(min = 2, max = 50)
-    val name: String
+    val name: String,
+
+    @field:NotNull
+    val role: UserRole
 )

@@ -1,0 +1,27 @@
+package com.sentencefit.application.teacherclass.service
+
+import com.sentencefit.application.teacherclass.port.`in`.DeleteClassUseCase
+import com.sentencefit.application.teacherclass.port.out.LoadClassPort
+import com.sentencefit.application.teacherclass.port.out.SaveClassPort
+import com.sentencefit.domain.teacherclass.exception.ClassErrorCode
+import com.sentencefit.domain.teacherclass.exception.ClassException
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+@Service
+class DeleteClassService(
+    private val loadClassPort: LoadClassPort,
+    private val saveClassPort: SaveClassPort,
+) : DeleteClassUseCase {
+
+    @Transactional
+    override fun execute(
+        teacherId: Long,
+        classId: Long,
+    ) {
+        val teacherClass = loadClassPort.findByTeacherIdAndId(teacherId, classId)
+            ?: throw ClassException(ClassErrorCode.CLASS_NOT_FOUND)
+
+        saveClassPort.save(teacherClass.delete())
+    }
+}

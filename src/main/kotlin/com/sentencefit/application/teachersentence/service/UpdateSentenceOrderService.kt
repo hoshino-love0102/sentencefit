@@ -26,15 +26,51 @@ class UpdateSentenceOrderService(
         setId: Long,
         request: UpdateSentenceOrderRequest,
     ) {
-        loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
+        val studySet = loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
             ?: throw SetException(SetErrorCode.SET_NOT_FOUND)
+
+        if (studySet.status.name == "DELETED") {
+            throw SetException(SetErrorCode.SET_ALREADY_DELETED)
+        }
+
+        if (request.items.isEmpty()) {
+            throw SetSentenceException(SetSentenceErrorCode.EMPTY_SENTENCE_ORDER_ITEMS)
+        }
+
+        request.items.forEach { item ->
+            if (item.sentenceId <= 0) {
+                throw SetSentenceException(SetSentenceErrorCode.SENTENCE_ID_REQUIRED)
+            }
+            if (item.orderNo <= 0) {
+                throw SetSentenceException(SetSentenceErrorCode.SENTENCE_ORDER_MUST_BE_POSITIVE)
+            }
+        }
+
+        val duplicateOrderExists = request.items
+            .groupBy { it.orderNo }
+            .any { it.value.size > 1 }
+
+        if (duplicateOrderExists) {
+            throw SetSentenceException(SetSentenceErrorCode.DUPLICATE_SENTENCE_ORDER)
+        }
 
         val currentSentences = loadSetSentencePort.findAllActiveBySetId(setId)
         val sentenceMap = currentSentences.associateBy { it.id }
 
+        val requestIds = request.items.map { it.sentenceId }.toSet()
+        val currentIds = currentSentences.mapNotNull { it.id }.toSet()
+
+        if (requestIds != currentIds) {
+            throw SetSentenceException(SetSentenceErrorCode.INVALID_SENTENCE_ORDER)
+        }
+
         val updatedSentences = request.items.map { item ->
             val sentence = sentenceMap[item.sentenceId]
                 ?: throw SetSentenceException(SetSentenceErrorCode.SET_SENTENCE_NOT_FOUND)
+
+            if (sentence.status.name == "DELETED") {
+                throw SetSentenceException(SetSentenceErrorCode.SET_SENTENCE_ALREADY_DELETED)
+            }
 
             sentence.updateOrder(item.orderNo)
         }

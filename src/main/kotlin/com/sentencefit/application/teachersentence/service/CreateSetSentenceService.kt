@@ -24,16 +24,20 @@ class CreateSetSentenceService(
         setId: Long,
         request: CreateSetSentenceRequest,
     ): SetSentenceResponse {
-        loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
+        val studySet = loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
             ?: throw SetException(SetErrorCode.SET_NOT_FOUND)
+
+        if (studySet.status.name == "DELETED") {
+            throw SetException(SetErrorCode.SET_ALREADY_DELETED)
+        }
 
         val sentence = SetSentence(
             setId = setId,
             orderNo = request.orderNo,
-            displayCode = request.displayCode?.trim()?.takeIf { it.isNotBlank() },
-            englishText = request.englishText.trim(),
-            koreanText = request.koreanText?.trim()?.takeIf { it.isNotBlank() },
-            grammarPoint = request.grammarPoint?.trim()?.takeIf { it.isNotBlank() },
+            displayCode = request.displayCode,
+            englishText = request.englishText,
+            koreanText = request.koreanText,
+            grammarPoint = request.grammarPoint,
         )
 
         return SetSentenceDtoMapper.toResponse(saveSetSentencePort.save(sentence))

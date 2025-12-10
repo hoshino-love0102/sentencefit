@@ -25,11 +25,19 @@ class DeleteSetSentenceService(
         setId: Long,
         sentenceId: Long,
     ) {
-        loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
+        val studySet = loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
             ?: throw SetException(SetErrorCode.SET_NOT_FOUND)
+
+        if (studySet.status.name == "DELETED") {
+            throw SetException(SetErrorCode.SET_ALREADY_DELETED)
+        }
 
         val sentence = loadSetSentencePort.findBySetIdAndId(setId, sentenceId)
             ?: throw SetSentenceException(SetSentenceErrorCode.SET_SENTENCE_NOT_FOUND)
+
+        if (sentence.status.name == "DELETED") {
+            throw SetSentenceException(SetSentenceErrorCode.SET_SENTENCE_ALREADY_DELETED)
+        }
 
         saveSetSentencePort.save(sentence.delete())
     }

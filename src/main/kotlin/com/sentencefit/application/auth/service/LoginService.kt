@@ -21,10 +21,10 @@ class LoginService(
 
     override fun login(request: LoginRequest): TokenResponse {
         val user = loadUserPort.findByEmail(request.email)
-            ?: throw AuthException(AuthErrorCode.INVALID_CREDENTIALS)
+            ?: throw AuthException(AuthErrorCode.INVALID_EMAIL_OR_PASSWORD)
 
         if (!passwordEncodePort.matches(request.password, user.password)) {
-            throw AuthException(AuthErrorCode.INVALID_CREDENTIALS)
+            throw AuthException(AuthErrorCode.INVALID_EMAIL_OR_PASSWORD)
         }
 
         val accessToken = jwtIssuePort.generateAccessToken(

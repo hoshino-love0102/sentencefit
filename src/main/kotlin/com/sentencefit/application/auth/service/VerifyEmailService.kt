@@ -17,10 +17,10 @@ class VerifyEmailService(
 
     override fun verify(email: String, code: String) {
         val saved = emailVerificationPort.find(email)
-            ?: throw AuthException(AuthErrorCode.EMAIL_CODE_EXPIRED)
+            ?: throw AuthException(AuthErrorCode.VERIFICATION_CODE_EXPIRED)
 
         if (saved.code != code) {
-            throw AuthException(AuthErrorCode.INVALID_EMAIL_CODE)
+            throw AuthException(AuthErrorCode.INVALID_VERIFICATION_CODE)
         }
 
         emailVerificationPort.markVerified(email, VERIFIED_TTL_SECONDS)

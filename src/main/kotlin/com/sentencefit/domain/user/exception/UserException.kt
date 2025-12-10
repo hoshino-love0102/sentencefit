@@ -1,6 +1,8 @@
 package com.sentencefit.domain.user.exception
 
+import com.sentencefit.common.exception.BusinessException
+
 class UserException(
-    val errorCode: UserErrorCode,
-    override val message: String = errorCode.message
-) : RuntimeException(message)
+    errorCode: UserErrorCode,
+    message: String = errorCode.message,
+) : BusinessException(errorCode, message)

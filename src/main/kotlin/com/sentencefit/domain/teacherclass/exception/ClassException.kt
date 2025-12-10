@@ -1,5 +1,8 @@
 package com.sentencefit.domain.teacherclass.exception
 
+import com.sentencefit.common.exception.BusinessException
+
 class ClassException(
-    val errorCode: ClassErrorCode,
-) : RuntimeException(errorCode.message)
+    errorCode: ClassErrorCode,
+    message: String = errorCode.message,
+) : BusinessException(errorCode, message)

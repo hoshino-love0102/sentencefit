@@ -1,6 +1,8 @@
 package com.sentencefit.domain.auth.exception
 
+import com.sentencefit.common.exception.BusinessException
+
 class AuthException(
-    val errorCode: AuthErrorCode,
-    override val message: String = errorCode.message
-) : RuntimeException(message)
+    errorCode: AuthErrorCode,
+    message: String = errorCode.message,
+) : BusinessException(errorCode, message)

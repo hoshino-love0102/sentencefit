@@ -23,21 +23,21 @@ class CreateSetService(
         classId: Long,
         request: CreateSetRequest,
     ): SetResponse {
-        loadClassPort.findByTeacherIdAndId(teacherId, classId)
+        val teacherClass = loadClassPort.findByTeacherIdAndId(teacherId, classId)
             ?: throw ClassException(ClassErrorCode.CLASS_NOT_FOUND)
+
+        if (teacherClass.status.name == "DELETED") {
+            throw ClassException(ClassErrorCode.CLASS_ALREADY_DELETED)
+        }
 
         val studySet = StudySet(
             classId = classId,
             teacherId = teacherId,
-            title = request.title.trim(),
-            description = request.description?.trim()?.takeIf { it.isNotBlank() },
+            title = request.title,
+            description = request.description,
             isPublished = request.isPublished,
         )
 
-        val saved = saveSetPort.save(studySet)
-        println("saved studySet = $saved")
-        println("saved studySet id = ${saved.id}")
-
-        return SetDtoMapper.toResponse(saved)
+        return SetDtoMapper.toResponse(saveSetPort.save(studySet))
     }
 }

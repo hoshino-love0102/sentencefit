@@ -23,6 +23,10 @@ class DeleteSetService(
         val studySet = loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
             ?: throw SetException(SetErrorCode.SET_NOT_FOUND)
 
+        if (studySet.status.name == "DELETED") {
+            throw SetException(SetErrorCode.SET_ALREADY_DELETED)
+        }
+
         saveSetPort.save(studySet.delete())
     }
 }

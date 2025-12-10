@@ -26,9 +26,13 @@ class UpdateSetService(
         val studySet = loadSetPort.findByTeacherIdAndClassIdAndId(teacherId, classId, setId)
             ?: throw SetException(SetErrorCode.SET_NOT_FOUND)
 
+        if (studySet.status.name == "DELETED") {
+            throw SetException(SetErrorCode.SET_ALREADY_DELETED)
+        }
+
         val updated = studySet.update(
-            title = request.title.trim(),
-            description = request.description?.trim()?.takeIf { it.isNotBlank() },
+            title = request.title,
+            description = request.description,
             isPublished = request.isPublished,
         )
 

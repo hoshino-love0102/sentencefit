@@ -18,11 +18,10 @@ enum class SetSentenceErrorCode(
     SENTENCE_ORDER_MUST_BE_POSITIVE(HttpStatus.BAD_REQUEST, "문장 순서는 1 이상이어야 합니다."),
 
     ENGLISH_TEXT_REQUIRED(HttpStatus.BAD_REQUEST, "영문 문장은 필수입니다."),
-    ENGLISH_TEXT_TOO_LONG(HttpStatus.BAD_REQUEST, "영문 문장은 2000자 이하여야 합니다."),
-    KOREAN_TEXT_TOO_LONG(HttpStatus.BAD_REQUEST, "해석은 2000자 이하여야 합니다."),
-    GRAMMAR_POINT_TOO_LONG(HttpStatus.BAD_REQUEST, "문법 포인트는 500자 이하여야 합니다."),
-    DISPLAY_CODE_TOO_LONG(HttpStatus.BAD_REQUEST, "표시 코드는 20자 이하여야 합니다."),
+    ENGLISH_TEXT_TOO_LONG(HttpStatus.BAD_REQUEST, "영문 문장은 2000자 이하이어야 합니다."),
+    KOREAN_TEXT_TOO_LONG(HttpStatus.BAD_REQUEST, "해석은 2000자 이하이어야 합니다."),
+    GRAMMAR_POINT_TOO_LONG(HttpStatus.BAD_REQUEST, "문법 포인트는 500자 이하이어야 합니다."),
+    DISPLAY_CODE_TOO_LONG(HttpStatus.BAD_REQUEST, "표시 코드는 20자 이하이어야 합니다."),
 
     SET_NOT_FOUND(HttpStatus.NOT_FOUND, "문장이 속한 세트를 찾을 수 없습니다."),
-    CLASS_NOT_FOUND(HttpStatus.NOT_FOUND, "문장이 속한 클래스를 찾을 수 없습니다."),
 }

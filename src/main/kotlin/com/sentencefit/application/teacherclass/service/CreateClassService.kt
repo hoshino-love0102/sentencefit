@@ -20,8 +20,8 @@ class CreateClassService(
     ): ClassResponse {
         val teacherClass = TeacherClass(
             teacherId = teacherId,
-            name = request.name.trim(),
-            description = request.description?.trim()?.takeIf { it.isNotBlank() },
+            name = request.name,
+            description = request.description,
         )
 
         return ClassDtoMapper.toResponse(saveClassPort.save(teacherClass))

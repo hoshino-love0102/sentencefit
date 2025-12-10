@@ -25,9 +25,13 @@ class UpdateClassService(
         val teacherClass = loadClassPort.findByTeacherIdAndId(teacherId, classId)
             ?: throw ClassException(ClassErrorCode.CLASS_NOT_FOUND)
 
+        if (teacherClass.status.name == "DELETED") {
+            throw ClassException(ClassErrorCode.CLASS_ALREADY_DELETED)
+        }
+
         val updated = teacherClass.update(
-            name = request.name.trim(),
-            description = request.description?.trim()?.takeIf { it.isNotBlank() },
+            name = request.name,
+            description = request.description,
         )
 
         return ClassDtoMapper.toResponse(saveClassPort.save(updated))

@@ -22,6 +22,10 @@ class DeleteClassService(
         val teacherClass = loadClassPort.findByTeacherIdAndId(teacherId, classId)
             ?: throw ClassException(ClassErrorCode.CLASS_NOT_FOUND)
 
+        if (teacherClass.status.name == "DELETED") {
+            throw ClassException(ClassErrorCode.CLASS_ALREADY_DELETED)
+        }
+
         saveClassPort.save(teacherClass.delete())
     }
 }

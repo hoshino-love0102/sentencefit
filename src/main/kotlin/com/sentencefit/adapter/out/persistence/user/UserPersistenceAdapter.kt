@@ -2,6 +2,7 @@ package com.sentencefit.adapter.out.persistence.user
 
 import com.sentencefit.application.auth.port.out.LoadUserPort
 import com.sentencefit.application.auth.port.out.SaveUserPort
+import com.sentencefit.application.classjoin.port.out.LoadUserPort as ClassJoinLoadUserPort
 import com.sentencefit.application.user.port.out.LoadUserQueryPort
 import com.sentencefit.domain.user.model.User
 import org.springframework.stereotype.Component
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component
 @Component
 class UserPersistenceAdapter(
     private val userJpaRepository: UserJpaRepository
-) : LoadUserPort, SaveUserPort, LoadUserQueryPort {
+) : LoadUserPort, SaveUserPort, LoadUserQueryPort, ClassJoinLoadUserPort {
 
     override fun findByEmail(email: String): User? =
         userJpaRepository.findByEmail(email)

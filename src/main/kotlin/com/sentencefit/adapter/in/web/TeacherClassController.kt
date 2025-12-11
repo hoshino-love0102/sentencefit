@@ -1,6 +1,9 @@
 package com.sentencefit.adapter.`in`.web
 
 import com.sentencefit.adapter.`in`.security.CustomUserPrincipal
+import com.sentencefit.application.classjoin.port.`in`.CreateJoinCodeUseCase
+import com.sentencefit.application.classjoin.port.`in`.GetJoinCodeUseCase
+import com.sentencefit.application.classjoin.port.`in`.RegenerateJoinCodeUseCase
 import com.sentencefit.application.teacherclass.dto.CreateClassRequest
 import com.sentencefit.application.teacherclass.dto.UpdateClassRequest
 import com.sentencefit.application.teacherclass.port.`in`.CreateClassUseCase
@@ -21,6 +24,9 @@ class TeacherClassController(
     private val getClassUseCase: GetClassUseCase,
     private val updateClassUseCase: UpdateClassUseCase,
     private val deleteClassUseCase: DeleteClassUseCase,
+    private val createJoinCodeUseCase: CreateJoinCodeUseCase,
+    private val getJoinCodeUseCase: GetJoinCodeUseCase,
+    private val regenerateJoinCodeUseCase: RegenerateJoinCodeUseCase,
 ) {
 
     @PostMapping
@@ -81,4 +87,31 @@ class TeacherClassController(
             "클래스가 삭제되었습니다."
         )
     }
+
+    @PostMapping("/{classId}/join-code")
+    fun createJoinCode(
+        @AuthenticationPrincipal principal: CustomUserPrincipal,
+        @PathVariable classId: Long,
+    ) = ApiResponse.success(
+        createJoinCodeUseCase.execute(principal.userId, classId),
+        "참여 코드 생성 성공"
+    )
+
+    @GetMapping("/{classId}/join-code")
+    fun getJoinCode(
+        @AuthenticationPrincipal principal: CustomUserPrincipal,
+        @PathVariable classId: Long,
+    ) = ApiResponse.success(
+        getJoinCodeUseCase.execute(principal.userId, classId),
+        "참여 코드 조회 성공"
+    )
+
+    @PutMapping("/{classId}/join-code")
+    fun regenerateJoinCode(
+        @AuthenticationPrincipal principal: CustomUserPrincipal,
+        @PathVariable classId: Long,
+    ) = ApiResponse.success(
+        regenerateJoinCodeUseCase.execute(principal.userId, classId),
+        "참여 코드 재생성 성공"
+    )
 }

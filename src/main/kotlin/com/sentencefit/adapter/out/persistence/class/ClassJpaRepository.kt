@@ -12,6 +12,11 @@ interface ClassJpaRepository : JpaRepository<ClassJpaEntity, Long> {
         status: ClassStatus,
     ): ClassJpaEntity?
 
+    fun findByIdAndStatus(
+        id: Long,
+        status: ClassStatus,
+    ): ClassJpaEntity?
+
     fun findAllByTeacherIdAndStatus(
         teacherId: Long,
         status: ClassStatus,

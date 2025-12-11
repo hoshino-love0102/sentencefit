@@ -1,5 +1,6 @@
 package com.sentencefit.adapter.out.persistence.`class`
 
+import com.sentencefit.application.classjoin.port.out.LoadJoinTargetClassPort
 import com.sentencefit.application.teacherclass.port.out.LoadClassPort
 import com.sentencefit.application.teacherclass.port.out.SaveClassPort
 import com.sentencefit.domain.teacherclass.model.ClassStatus
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component
 @Component
 class ClassPersistenceAdapter(
     private val classJpaRepository: ClassJpaRepository,
-) : SaveClassPort, LoadClassPort {
+) : SaveClassPort, LoadClassPort, LoadJoinTargetClassPort {
 
     override fun save(teacherClass: TeacherClass): TeacherClass {
         val saved = classJpaRepository.save(ClassPersistenceMapper.toEntity(teacherClass))
@@ -25,6 +26,13 @@ class ClassPersistenceAdapter(
         return classJpaRepository.findByIdAndTeacherIdAndStatus(
             id = classId,
             teacherId = teacherId,
+            status = ClassStatus.ACTIVE,
+        )?.let(ClassPersistenceMapper::toDomain)
+    }
+
+    override fun findById(classId: Long): TeacherClass? {
+        return classJpaRepository.findByIdAndStatus(
+            id = classId,
             status = ClassStatus.ACTIVE,
         )?.let(ClassPersistenceMapper::toDomain)
     }

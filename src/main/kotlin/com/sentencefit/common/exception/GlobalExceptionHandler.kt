@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.servlet.NoHandlerFoundException
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.orm.jpa.JpaSystemException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -113,12 +115,34 @@ class GlobalExceptionHandler {
             .body(ApiResponse.fail("요청한 경로를 찾을 수 없습니다."))
     }
 
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    fun handleDataIntegrityViolationException(
+        e: DataIntegrityViolationException,
+    ): ResponseEntity<ApiResponse<Void>> {
+        log.error("Data integrity violation occurred", e)
+
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(ApiResponse.fail("데이터 저장 중 충돌이 발생했습니다."))
+    }
+
+    @ExceptionHandler(JpaSystemException::class)
+    fun handleJpaSystemException(
+        e: JpaSystemException,
+    ): ResponseEntity<ApiResponse<Void>> {
+        log.error("JPA system exception occurred", e)
+
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ApiResponse.fail("DB 처리 중 오류가 발생했습니다."))
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ApiResponse<Void>> {
         log.error("Unhandled exception occurred", e)
 
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiResponse.fail("서버 내부 오류가 발생했습니다."))
+            .body(ApiResponse.fail(e.message ?: "서버 내부 오류가 발생했습니다."))
     }
 }

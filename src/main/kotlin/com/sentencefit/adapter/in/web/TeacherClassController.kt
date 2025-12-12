@@ -2,8 +2,10 @@ package com.sentencefit.adapter.`in`.web
 
 import com.sentencefit.adapter.`in`.security.CustomUserPrincipal
 import com.sentencefit.application.classjoin.port.`in`.CreateJoinCodeUseCase
+import com.sentencefit.application.classjoin.port.`in`.GetClassMembersUseCase
 import com.sentencefit.application.classjoin.port.`in`.GetJoinCodeUseCase
 import com.sentencefit.application.classjoin.port.`in`.RegenerateJoinCodeUseCase
+import com.sentencefit.application.classjoin.port.`in`.RemoveClassMemberUseCase
 import com.sentencefit.application.teacherclass.dto.CreateClassRequest
 import com.sentencefit.application.teacherclass.dto.UpdateClassRequest
 import com.sentencefit.application.teacherclass.port.`in`.CreateClassUseCase
@@ -27,6 +29,8 @@ class TeacherClassController(
     private val createJoinCodeUseCase: CreateJoinCodeUseCase,
     private val getJoinCodeUseCase: GetJoinCodeUseCase,
     private val regenerateJoinCodeUseCase: RegenerateJoinCodeUseCase,
+    private val getClassMembersUseCase: GetClassMembersUseCase,
+    private val removeClassMemberUseCase: RemoveClassMemberUseCase,
 ) {
 
     @PostMapping
@@ -114,4 +118,46 @@ class TeacherClassController(
         regenerateJoinCodeUseCase.execute(principal.userId, classId),
         "참여 코드 재생성 성공"
     )
+
+    @GetMapping("/{classId}/members")
+    fun getMembers(
+        @AuthenticationPrincipal principal: CustomUserPrincipal,
+        @PathVariable classId: Long,
+        @RequestParam(required = false) keyword: String?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ) = ApiResponse.success(
+        getClassMembersUseCase.execute(
+            teacherId = principal.userId,
+            classId = classId,
+            keyword = keyword,
+            pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "joinedAt"),
+            ),
+        ),
+        "클래스 멤버 목록 조회 성공"
+    )
+
+    @DeleteMapping("/{classId}/members/{studentId}")
+    fun removeMember(
+        @AuthenticationPrincipal principal: CustomUserPrincipal,
+        @PathVariable classId: Long,
+        @PathVariable studentId: Long,
+    ): ApiResponse<Map<String, Any>> {
+        removeClassMemberUseCase.execute(
+            teacherId = principal.userId,
+            classId = classId,
+            studentId = studentId,
+        )
+
+        return ApiResponse.success(
+            mapOf(
+                "id" to studentId,
+                "status" to "REMOVED",
+            ),
+            "클래스 멤버 제거 성공"
+        )
+    }
 }

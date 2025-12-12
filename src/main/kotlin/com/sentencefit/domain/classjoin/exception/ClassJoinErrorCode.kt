@@ -12,4 +12,5 @@ enum class ClassJoinErrorCode(
     ALREADY_JOINED_CLASS(HttpStatus.CONFLICT, "이미 참여한 클래스입니다."),
     ONLY_STUDENT_CAN_JOIN(HttpStatus.FORBIDDEN, "학생만 클래스에 참여할 수 있습니다."),
     JOIN_TARGET_CLASS_NOT_FOUND(HttpStatus.NOT_FOUND, "참여 대상 클래스를 찾을 수 없습니다."),
+    CLASS_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "클래스 멤버를 찾을 수 없습니다."),
 }

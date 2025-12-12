@@ -21,6 +21,13 @@ class ClassMemberPersistenceAdapter(
             status = ClassMemberStatus.ACTIVE,
         )
 
+    override fun findActiveMember(classId: Long, studentId: Long): ClassMember? =
+        classMemberJpaRepository.findByClassIdAndStudentIdAndStatus(
+            classId = classId,
+            studentId = studentId,
+            status = ClassMemberStatus.ACTIVE,
+        )?.let(ClassMemberPersistenceMapper::toDomain)
+
     override fun save(classMember: ClassMember): ClassMember {
         log.info(
             "Saving class member. classId={}, studentId={}, status={}, joinedAt={}",
